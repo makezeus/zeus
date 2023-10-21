@@ -3,9 +3,7 @@ version: '3'
 services:
   web:
     build:
-      context: . # Usa o diretório atual (onde está o Dockerfile)
+      context: .
     ports:
       - "80:80"
-    volumes:
-      - .:/var/www/html
 

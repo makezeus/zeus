@@ -84,10 +84,9 @@ function formatPhone($telefone)
 function removeMask($value)
 {
     return preg_replace("/[^0-9]/", "", $value);
-
 }
 
-function statusMapperBudget($status)
+function statusMapperBudget($status, $mobileIgnore = false)
 {
     switch ($status) {
         case 'Aberto':
@@ -111,6 +110,9 @@ function statusMapperBudget($status)
         default:
             $cor = '#DCDCF8';
             break;
+    }
+    if (getMobileRequest() && !$mobileIgnore) {
+        return "<div class='mobile-badge' style='background-color:" . $cor . ";'></div>";
     }
 
     return "<span class='badge' style='background-color:" . $cor . "; border-color: " . $cor . "'>" . $status . "</span>";
@@ -138,11 +140,10 @@ function getProfileImage($name, $image, $size)
     $picture .= '</picture>';
 
     return $picture;
-
-
 }
 
 
-function formatMoney($number) {
+function formatMoney($number)
+{
     return 'R$ ' . number_format($number, 2, ',', '.');
 }

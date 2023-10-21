@@ -17,19 +17,64 @@ class Zeus extends CI_Controller
             redirect('zeus/login');
         }
 
-
-        $this->data['ordens'] = $this->ZeusModel->getOsAbertas();
         $this->data['billedProducts'] = $this->ZeusModel->getBilledProducts();
-        $this->data['oos'] = $this->ZeusModel->getOs();
-        $this->data['produtos5'] = $this->ZeusModel->getProdutos();
-        $this->data['produtos'] = $this->ZeusModel->getProdutosMinimo();
+        $this->data['orderOfService'] = $this->ZeusModel->getOs();
         $this->data['os'] = $this->ZeusModel->getOsEstatisticas();
-        $this->data['estatisticas_financeiro'] = $this->ZeusModel->getEstatisticasFinanceiro();
-        $this->data['menuPainel'] = 'Painel';
+        $this->data['financialStatistics'] = $this->ZeusModel->getEstatisticasFinanceiro();
         $this->data['pageName'] = 'Dashboard';
-        $this->data['view'] = 'zeus/painel';
-        $this->load->view('tema/topo', $this->data);
+        $this->data['view'] = 'zeus/dashboard';
+        $this->data['saluteMessage'] = $this->getSaluteMessage();
+        $this->data['dashItems'] = [
+            [
+                'title' => 'Receita do mês',
+                'value' => 'R$ ' . number_format($this->data['financialStatistics']->total_receita - $this->data['financialStatistics']->total_despesa, 2, ',', '.'),
+                'shortcut' => '',
+                'icon' => '<i class="ri-line-chart-line"></i>',
+                'color' => '#9333EA'
+            ],
+            [
+                'title' => 'clientes',
+                'value' => $this->ZeusModel->count('clientes'),
+                'shortcut' => 'F1',
+                'icon' => '<i class="ri-team-line"></i>',
+                'color' => 'black'
+            ],
+            [
+                'title' => 'Produtos',
+                'value' => $this->ZeusModel->count('produtos'),
+                'shortcut' => 'F2',
+                'icon' => '<i class="ri-shopping-cart-line"></i>',
+                'color' => 'black'
+            ],
+            [
+                'title' => 'Serviços',
+                'value' => $this->ZeusModel->count('servicos'),
+                'shortcut' => 'F3',
+                'icon' => '<i class="ri-customer-service-line"></i>',
+                'color' => 'black'
+            ],
+            [
+                'title' => 'Ordens de Serviço',
+                'value' => $this->ZeusModel->count('os'),
+                'shortcut' => 'F4',
+                'icon' => '<i class="ri-file-line"></i>',
+                'color' => 'black'
+            ],
+        ];
 
+        if (getMobileRequest()) {
+            array_shift($this->data['dashItems']);
+        };
+
+        $this->load->view('tema/topo', $this->data);
+    }
+
+    function getSaluteMessage()
+    {
+        $hr = date("H");
+        $resp = ($hr >= 12 && $hr < 18) ? "Boa tarde!" : (($hr >= 0 && $hr < 12) ? "Bom dia!" : "Boa noite!");
+        $primeiroNome = explode(" ", $this->session->userdata('nome'));
+        return $resp . '&nbsp' . $primeiroNome[0];
     }
 
     public function minhaConta()
@@ -41,7 +86,6 @@ class Zeus extends CI_Controller
         $this->data['usuario'] = $this->ZeusModel->getById($this->session->userdata('id'));
         $this->data['view'] = 'zeus/minhaConta';
         $this->load->view('tema/topo', $this->data);
-
     }
 
     public function changePassword()
@@ -62,7 +106,6 @@ class Zeus extends CI_Controller
         } else {
             $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar alterar a senha!');
             redirect(base_url() . 'zeus/minhaConta');
-
         }
     }
 
@@ -81,14 +124,12 @@ class Zeus extends CI_Controller
         $this->data['clientes'] = $data['results']['clientes'];
         $this->data['view'] = 'zeus/pesquisa';
         $this->load->view('tema/topo', $this->data);
-
     }
 
     public function login()
     {
 
         $this->load->view('zeus/login');
-
     }
     public function sair()
     {
@@ -241,7 +282,6 @@ class Zeus extends CI_Controller
             $file_info = array($this->upload->data());
             return $file_info[0]['file_name'];
         }
-
     }
 
 
@@ -276,7 +316,6 @@ class Zeus extends CI_Controller
 
             $this->session->set_flashdata('error', 'Campos obrigatórios não foram preenchidos.');
             redirect(base_url() . 'zeus/emitente');
-
         } else {
 
             $nome = $this->input->post('nome');
@@ -302,7 +341,6 @@ class Zeus extends CI_Controller
                 $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar inserir as informações.');
                 redirect(base_url() . 'zeus/emitente');
             }
-
         }
     }
 
@@ -313,21 +351,21 @@ class Zeus extends CI_Controller
             if ((!session_id()) || (!$this->session->userdata('logado'))) {
                 redirect('zeus/login');
             }
-    
+
             if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
                 $this->session->set_flashdata('error', 'Você não tem permissão para configurar emitente.');
                 redirect(base_url());
             }
-    
+
             $image_upload_folder = FCPATH . 'assets/company/logo';
-    
+
             if (!file_exists($image_upload_folder)) {
                 mkdir($image_upload_folder, DIR_WRITE_MODE, true);
             }
-    
+
             $config['upload_path'] = $image_upload_folder;
             $config['allowed_types'] = 'gif|jpg|jpeg|png';
-    
+
             $this->load->library('form_validation');
             $this->form_validation->set_rules('nome', 'Razão Social', 'required|trim');
             $this->form_validation->set_rules('cnpj', 'CNPJ', 'required|trim');
@@ -339,11 +377,11 @@ class Zeus extends CI_Controller
             $this->form_validation->set_rules('uf', 'UF', 'required|trim');
             $this->form_validation->set_rules('telefone', 'Telefone', 'required|trim');
             $this->form_validation->set_rules('email', 'E-mail', 'required|trim');
-    
+
             if ($this->form_validation->run() == false) {
                 throw new Exception('Campos obrigatórios não foram preenchidos.');
             }
-    
+
             $nome = $this->input->post('nome');
             $cnpj = $this->input->post('cnpj');
             $ie = $this->input->post('ie');
@@ -355,15 +393,15 @@ class Zeus extends CI_Controller
             $telefone = $this->input->post('telefone');
             $email = $this->input->post('email');
             $id = $this->session->userdata('company')[0]->id;
-    
+
             $userdataCompany = $this->session->userdata('company');
-    
+
             $fieldsToUpdate = ['nome', 'cnpj', 'ie', 'logradouro', 'numero', 'bairro', 'cidade', 'uf', 'telefone', 'email'];
-    
+
             $retorno = $this->ZeusModel->updateCompany($id, $nome, $cnpj, $ie, $logradouro, $numero, $bairro, $cidade, $uf, $telefone, $email);
-    
+
             $this->load->library('upload', $config);
-    
+
             if ($this->upload->do_upload()) {
                 $upload_data = $this->upload->data();
                 $file_name = $upload_data['file_name'];
@@ -372,26 +410,25 @@ class Zeus extends CI_Controller
                 $userdataCompany[0]->url_logo = $logo;
                 $response = ['success' => true, 'image_url' => $logo];
             }
-    
+
             foreach ($fieldsToUpdate as $field) {
                 $value = $this->input->post($field);
                 if ($value !== null) {
                     $userdataCompany[0]->$field = $value;
                 }
             }
-    
+
             $this->session->set_userdata('company', $userdataCompany);
             $response = ['success' => true, 'result' => $retorno];
-    
+
             echo json_encode($response);
-    
         } catch (\Throwable $th) {
             http_response_code(500);
             $response = ['status' => 'error', 'message' => $th->getMessage()];
             echo json_encode($response);
         }
     }
-    
+
 
 
     public function editarLogo()
@@ -426,7 +463,6 @@ class Zeus extends CI_Controller
             $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar alterar as informações.');
             redirect(base_url() . 'zeus/emitente');
         }
-
     }
 
 
@@ -447,5 +483,4 @@ class Zeus extends CI_Controller
         $data['company'] = 'components/company';
         $this->load->view('tema/topo', $data);
     }
-
 }
