@@ -15,102 +15,103 @@ class Produtos extends CI_Controller
         $this->load->helper(array('form', 'codegen_helper'));
         $this->load->model('produtos_model', '', TRUE);
         $this->data['menuProdutos'] = 'Produtos';
+
+        $this->load->library('pagination');
+        $this->load->library('table_generator');
     }
 
     function index()
     {
-        $this->gerenciar();
-    }
-
-    function gerenciar()
-    {
-
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar serviços.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar esta pagina.');
             redirect(base_url());
         }
 
-        $this->load->library('table');
-        $this->load->library('pagination');
-        $this->load->library('table_generator');
-
-        $this->data['pageName'] = 'Produtos';
-        $this->data['termo'] = $this->input->post('termo');
-
-        $this->setupPagination();
-        $this->setupTableColumns();
-        $this->setupTableData();
-        $this->generateTable();
+        $this->data['pageData'] = [
+            'title' => 'Produtos',
+            'searchPlaceholder' => 'Buscar produtos'
+        ];
+        $this->data['tableName'] = 'produtos';
+        $this->data['pageUrl'] = 'produtos';
+        $this->data['table'] = $this->generateTable();
 
         if ($this->input->is_ajax_request()) {
             echo $this->data['table'];
         } else {
-
-            $this->data['view'] = 'produtos/produtos';
-            $this->load->view('tema/topo', $this->data);
-
+            $this->loadView('produtos/produtos');
         }
-
-    }
-
-
-    private function setupPagination()
-    {
-        $config['base_url'] = base_url() . '/pordutos/gerenciar/';
-        $config['total_rows'] = $this->produtos_model->count('produtos', $this->data['termo']);
-        $this->pagination->initialize($config);
-    }
-
-    private function setupTableData()
-    {
-        $this->data['results'] = $this->produtos_model->get('produtos', 'idProdutos,descricao,precoCompra,precoVenda, lucro', $this->data['termo'], 10, $this->uri->segment(3));
-
-        foreach ($this->data['results'] as $row) {
-            $row->products_information = '<div style="display: flex; flex-direction:column; align-items: flex-start;">
-            <span class="cutText">
-                <a href="' . base_url() . 'produtos/visualizar/' . $row->idProdutos . '">
-                ' . ucwords($row->descricao) . '
-                </a>
-            </span>
-            <span style="font-size: 0.75rem; color: ' . ($row->lucro > 0 ? "green" : "red") . '">
-                Lucro: ' . formatMoney($row->lucro) . '
-            </span>
-        </div>';
-
-            $row->actions = '<a href="' . base_url() . 'produtos/editar/' . $row->idProdutos . '" style="margin-right: 1%" class="btn tip-top" title="Editar">Editar</a>';
-            $row->costPrice = formatMoney($row->precoCompra);
-            $row->salePrice = formatMoney($row->precoVenda);
-            $row->profit = formatMoney($row->lucro);
-        }
-    }
-
-    private function setupTableColumns()
-    {
-
-        if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/mobile|android|iphone|ipad|phone|iemobile/i', $_SERVER['HTTP_USER_AGENT'])) {
-            $this->data['hiddenHeader'] = true;
-            $this->data['columns'] = [
-                'Produto' => 'products_information',
-                'Preço de Custo' => 'costPrice'
-            ];
-        } else {
-            $this->data['hiddenHeader'] = false;
-            $this->data['columns'] = [
-                'Produto' => 'products_information',
-                'Preço de Custo' => 'costPrice',
-                'Preço de Venda' => 'salePrice',
-                '' => 'actions',
-            ];
-        }
-
     }
 
     private function generateTable()
     {
-        $this->data['table'] = $this->table_generator->generate($this->data['columns'], $this->data['results'], $this->data['hiddenHeader']);
+
+        $fields = [
+            ["field" => 'descricao', "formatter" => 'ucwords'],
+            ["field" => 'precoVenda', "formatter" => 'formatMoney'],
+            ["field" => 'precoCompra', "formatter" => 'formatMoney'],
+            ["field" => 'lucro', "formatter" => 'formatMoney'],
+            ["field" => 'idProdutos', "formatter" => ''],
+        ];
+
+        $customFields = [];
+        $columns = [];
+
+        if (getMobileRequest()) {
+            $customFields[] = [
+                "field" => "price",
+                "value" => '<div style="display: flex; flex-direction:column; align-items: flex-end;">
+                            <span>$$precoVenda$$</span>
+                            <span style="font-size: 0.75rem; color: #6B7280">$$precoCompra$$</span>
+                        </div>',
+            ];
+            $columns = [
+                'Produto' => 'porductsInformation',
+                'Preço de Venda' => 'price'
+            ];
+        } else {
+            $customFields[] = [
+                "field" => "actions",
+                "value" => '<a href="' . base_url() . 'produtos/visualizar/$$idProdutos$$" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes">Visualizar</a>',
+            ];
+            $columns = [
+                'Produto' => 'porductsInformation',
+                'Preço de Custo' => 'precoCompra',
+                'Preço de Venda' => 'precoVenda',
+                '' => 'actions',
+            ];
+        }
+
+        $customFields[] = [
+            "field" => "porductsInformation",
+            "value" => '
+            <div style="display: flex; flex-direction:column; align-items: flex-start;">
+            <span class="cutText">
+                <a href="' . base_url() . 'produtos/visualizar/$$idProdutos$$">
+                $$descricao$$
+                </a>
+            </span>
+            <span style="font-size: 0.75rem; color: green;">
+                Lucro: $$lucro$$
+            </span>
+        </div>',
+        ];
+
+        return $this->table_generator->_generate(
+            'produtos',
+            $fields,
+            'descricao',
+            'idProdutos',
+            $columns,
+            $customFields
+        );
+
     }
 
-
+    private function loadView($view)
+    {
+        $this->data['view'] = $view;
+        $this->load->view('tema/topo', $this->data);
+    }
 
     function adicionar()
     {
