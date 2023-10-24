@@ -14,31 +14,26 @@ class Clientes extends CI_Controller
         $this->load->helper(array('form', 'codegen_helper'));
         $this->load->model('clientes_model', '', TRUE);
         $this->data['menuClientes'] = 'clientes';
-    }
-
-    function index()
-    {
-        $this->gerenciar();
-    }
-
-    function gerenciar()
-    {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar clientes.');
-            redirect(base_url());
-        }
 
         $this->load->library('table');
         $this->load->library('pagination');
         $this->load->library('table_generator');
+    }
 
-        $this->data['pageName'] = 'Clientes';
-        $this->data['termo'] = $this->input->post('termo');
+    function index()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar esta pagina.');
+            redirect(base_url());
+        }
 
-        $this->setupPagination();
-        $this->setupTableColumns();
-        $this->setupTableData();
-        $this->generateTable();
+        $this->data['pageData'] = [
+            'title' => 'Clientes',
+            'searchPlaceholder' => 'Buscar clientes'
+        ];
+        $this->data['tableName'] = 'clientes';
+        $this->data['pageUrl'] = 'clientes';
+        $this->data['table'] = $this->generateTable();
 
         if ($this->input->is_ajax_request()) {
             echo $this->data['table'];
@@ -47,60 +42,65 @@ class Clientes extends CI_Controller
         }
     }
 
-    private function setupPagination()
-    {
-        $config['base_url'] = base_url() . '/clientes/gerenciar/';
-        $config['total_rows'] = $this->clientes_model->count('clientes', $this->data['termo']);
-        $this->pagination->initialize($config);
-    }
-
-    private function setupTableColumns()
+    private function generateTable()
     {
 
-        if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/mobile|android|iphone|ipad|phone|iemobile/i', $_SERVER['HTTP_USER_AGENT'])) {
-            $this->data['hiddenHeader'] = true;
-            $this->data['columns'] = [
-                'Cliente' => 'customer_information',
+        $fields = [
+            ["field" => 'telefoneCliente', "formatter" => 'formatPhone'],
+            ["field" => 'emailCliente', "formatter" => ''],
+            ["field" => 'nomeCliente', "formatter" => 'ucwords'],
+            ["field" => 'idClientes', "formatter" => ''],
+            ["field" => 'documento', "formatter" => 'formatarDocumento']
+        ];
+
+        $customFields = [];
+        $columns = [];
+
+        if (getMobileRequest()) {
+            $customFields[] = [
+                "field" => "contact",
+                "value" => '<div style="display: flex; flex-direction:column; align-items: flex-end;">
+                            <span>$$telefoneCliente$$</span>
+                            <span style="font-size: 0.75rem; color: #6B7280">$$emailCliente$$</span>
+                        </div>',
+            ];
+            $columns = [
+                'Cliente' => 'customerInformation',
                 'Contato' => 'contact'
             ];
         } else {
-            $this->data['hiddenHeader'] = false;
-            $this->data['columns'] = [
-                'Cliente' => 'customer_information',
+            $customFields[] = [
+                "field" => "actions",
+                "value" => '<a href="' . base_url() . 'clientes/visualizar/$$idClientes$$" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes">Visualizar</a>',
+            ];
+            $columns = [
+                'Cliente' => 'customerInformation',
                 'Telefone' => 'telefoneCliente',
                 'Email' => 'emailCliente',
                 '' => 'actions',
             ];
         }
 
-    }
+        $customFields[] = [
+            "field" => "customerInformation",
+            "value" => '
+            <div style="display: flex; flex-direction:column; align-items: flex-start;">
+                <span class="cutText">
+                    <a href="' . base_url() . 'clientes/visualizar/$$idClientes$$">$$nomeCliente$$</a>
+                </span>
+                <span style="font-size: 0.75rem; color: #6B7280">$$documento$$</span>
+            </div>',
+        ];
 
-    private function setupTableData()
-    {
-        $this->data['results'] = $this->clientes_model->get('clientes', 'idClientes,nomeCliente,documento,telefoneCliente,celular,emailCliente,rua,numero,bairro,cidade,estado,cep', $this->data['termo'], 10, $this->uri->segment(3));
+        return $this->table_generator->_generate(
+            'clientes',
+            $fields,
+            'nomeCliente',
+            'idClientes',
+            $columns,
+            $customFields
+        );
 
-        foreach ($this->data['results'] as $row) {
-            $row->customer_information = '<div style="display: flex; flex-direction:column; align-items: flex-start;">
-                                                <span class="cutText">
-                                                <a href="' . base_url() . 'clientes/visualizar/' . $row->idClientes . '">
-                                                ' . ucwords($row->nomeCliente) . '</span>
-                                                </a>
-                                                <span style="font-size: 0.75rem; color: #6B7280">' . formatarDocumento($row->documento) . '</span>
-                                            </div>';
-            $row->actions = '<a href="' . base_url() . 'clientes/visualizar/' . $row->idClientes . '" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes">Visualizar</a>';
-            $row->telefoneCliente = formatPhone($row->telefoneCliente);
-            $row->contact = '<div style="display: flex; flex-direction:column; align-items: flex-end;">
-            <span>' . formatPhone($row->telefoneCliente) . '</span>
-            <span style="font-size: 0.75rem; color: #6B7280">' . $row->emailCliente . '</span>
-        </div>';
-
-
-        }
-    }
-
-    private function generateTable()
-    {
-        $this->data['table'] = $this->table_generator->generate($this->data['columns'], $this->data['results'], $this->data['hiddenHeader']);
     }
 
     private function loadView($view)
@@ -155,10 +155,8 @@ class Clientes extends CI_Controller
         $this->load->view('tema/topo', $this->data);
     }
 
-
     function editar()
     {
-
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('zeus');
@@ -207,7 +205,6 @@ class Clientes extends CI_Controller
 
     public function visualizar()
     {
-
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('zeus');
@@ -228,8 +225,6 @@ class Clientes extends CI_Controller
 
     public function excluir()
     {
-
-
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dCliente')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para excluir clientes.');
             redirect(base_url());
