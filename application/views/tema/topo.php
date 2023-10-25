@@ -359,7 +359,7 @@ $hasImagem = !empty($this->session->userdata('perfil'));
   <script>
     var $j = jQuery.noConflict();
 
-    function openNav () {
+    function openNav() {
       document.getElementById("sidebar").style.display = "block";
       document.getElementById("boxl").style.display = "block";
     }
@@ -473,7 +473,21 @@ $hasImagem = !empty($this->session->userdata('perfil'));
   <script>
     $(".alert").delay(4000).fadeOut(200, function () { });
   </script>
+  <script>
+    function formatReal(input) {
+      const value = input.value.replace(/\D/g, '');
+      if (!value) {
+        return;
+      }
 
+      const formattedValue = (parseFloat(value) / 100).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+
+      input.value = formattedValue;
+    }
+  </script>
 </body>
 
 </html>

@@ -86,16 +86,7 @@ $config = array('clientes' => array(array(
                                     'label'=>'Preo de Venda',
                                     'rules'=>'required|trim'
                                 ),
-                                array(
-                                    'field'=>'estoque',
-                                    'label'=>'Estoque',
-                                    'rules'=>'required|trim'
-                                ),
-                                array(
-                                    'field'=>'estoqueMinimo',
-                                    'label'=>'Estoque Mnimo',
-                                    'rules'=>'trim'
-                                ))
+                                )
                 ,
                 'usuarios' => array(array(
                                     'field'=>'nome',

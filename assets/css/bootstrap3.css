@@ -2630,9 +2630,9 @@ label {
   display: inline-block;
   max-width: 100%;
   margin-bottom: 0px;
-  font-weight: 500;
-  font-size: 0.75rem;
-  color: #333;
+  font-weight: bolder;
+  font-size: 0.8rem;
+  color: #000;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;
@@ -7042,4 +7042,11 @@ button.close {
   height: 45px;
   background: aqua;
   border-radius: 16px;
+}
+
+select {
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }

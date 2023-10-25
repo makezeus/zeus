@@ -3,8 +3,6 @@
 class Produtos extends CI_Controller
 {
 
-
-
     function __construct()
     {
         parent::__construct();
@@ -127,27 +125,33 @@ class Produtos extends CI_Controller
         if ($this->form_validation->run('produtos') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            $precoCompra = $this->input->post('precoCompra');
-            $precoCompra = str_replace(",", "", $precoCompra);
-            $precoVenda = $this->input->post('precoVenda');
-            $precoVenda = str_replace(",", "", $precoVenda);
-            $lucro = $this->input->post('lucro');
-            $lucro = str_replace(",", "", $lucro);
+
+            $costPrice = formatMoneyDB($this->input->post('precoCompra'));
+            $salePrice = formatMoneyDB($this->input->post('precoVenda'));
+            $profit = formatMoneyDB($this->input->post('lucro'));
+
+
             $data = array(
                 'descricao' => set_value('descricao'),
                 'unidade' => set_value('unidade'),
-                'precoCompra' => $precoCompra,
-                'precoVenda' => $precoVenda,
-                'lucro' => $lucro,
-                'estoque' => set_value('estoque'),
-                'estoqueMinimo' => set_value('estoqueMinimo'),
-                'saida' => set_value('saida'),
-                'entrada' => set_value('entrada'),
+                'precoCompra' => $costPrice,
+                'precoVenda' => $salePrice,
+                'lucro' => $profit,
+                'estoque' => 9999999,
+                'estoqueMinimo' => 0,
+                'saida' => 1,
+                'entrada' => 1,
             );
 
-            if ($this->produtos_model->add('produtos', $data) == TRUE) {
-                $this->session->set_flashdata('success', 'Produto adicionado com sucesso!');
-                redirect(base_url() . 'produtos/adicionar/');
+            if ($this->produtos_model->add('produtos', $data) == true) {
+                $this->session->set_flashdata(
+                    'alert',
+                    array(
+                        'title' => 'Seu Produto foi cadastrado!!',
+                        'message' => 'Agora você pode adiciona-lo as ordens de serviço.'
+                    )
+                );
+                redirect(base_url() . 'produtos');
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>An Error Occured.</p></div>';
             }

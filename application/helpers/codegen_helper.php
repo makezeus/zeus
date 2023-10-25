@@ -156,3 +156,14 @@ function formatDate($date)
     }
     return '';
 }
+
+function formatMoneyDB($value)
+{
+    $precoCompra = trim($value);
+    $precoCompra = str_replace("R$", "", $precoCompra);
+    $precoCompra = str_replace(",", ".", $precoCompra);
+    $precoCompra = preg_replace('/[^\d.]/', '', $precoCompra);
+    $precoCompra = (float) $precoCompra;
+
+    return $precoCompra;
+}
