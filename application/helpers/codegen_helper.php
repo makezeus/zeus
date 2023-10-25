@@ -147,3 +147,12 @@ function formatMoney($number)
 {
     return 'R$ ' . number_format($number, 2, ',', '.');
 }
+
+function formatDate($date)
+{
+    if (!empty($date)) {
+        $formattedDate = date('d/m/Y', strtotime($date));
+        return $formattedDate;
+    }
+    return '';
+}

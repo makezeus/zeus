@@ -4,10 +4,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; flex-direction:column">
                 <h4>
-                    <? echo ucwords($result->nomeCliente) ?>
+                    <?= ucwords($result->nomeCliente) ?>
                 </h4>
                 <span style="color: #6B7280">
-                    <? echo formatarDocumento($result->documento) ?>
+                    <?= formatarDocumento($result->documento) ?>
                 </span>
             </div>
             <div>
@@ -32,21 +32,21 @@
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">TELEFONE</h6>
                             <div>
-                                <? echo formatPhone($result->telefoneCliente) ?>
+                                <?= formatPhone($result->telefoneCliente) ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">TELEFONE AUXILIAR</h6>
                             <div>
-                                <? echo formatPhone($result->celular) ?>
+                                <?= formatPhone($result->celular) ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">EMAIL</h6>
                             <div>
-                                <? echo $result->emailCliente ?>
+                                <?= $result->emailCliente ?>
                             </div>
                         </div>
                     </div>
@@ -60,35 +60,35 @@
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">RUA</h6>
                             <div>
-                                <? echo $result->rua ?>
+                                <?= $result->rua ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">NÚMERO</h6>
                             <div>
-                                <? echo $result->numero ?>
+                                <?= $result->numero ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">BAIRRO</h6>
                             <div>
-                                <? echo $result->bairro ?>
+                                <?= $result->bairro ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">CIDADE</h6>
                             <div>
-                                <? echo $result->cidade ?>
+                                <?= $result->cidade ?>
                             </div>
                         </div>
                         <div
                             style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
                             <h6 style="color: #9CA3AF;">CEP</h6>
                             <div>
-                                <? echo $result->cep ?>
+                                <?= $result->cep ?>
                             </div>
                         </div>
                     </div>
@@ -104,10 +104,9 @@
         </div>
 
         <div class="col-md-12">
-            <table class="table ">
+            <table class="table">
                 <thead>
                     <tr style="backgroud-color: #2D335B">
-
                         <th>Data Inicial</th>
                         <th>Data Final</th>
                         <th>Status</th>
@@ -116,42 +115,43 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     <?php if (!$results) { ?>
                         <tr>
                             <td colspan="6">Nenhuma OS Cadastrada</td>
                         </tr>
-                    <? } else { ?>
-                        <?php
-                        foreach ($results as $r) {
-                            $dataInicial = date(('d/m/Y'), strtotime($r->dataInicial));
-                            $dataFinal = date(('d/m/Y'), strtotime($r->dataFinal));
-                            echo '<tr>';
-
-                            echo '<td>' . $dataInicial . '</td>';
-                            echo '<td>' . $dataFinal . '</td>';
-                            echo '<td>' . statusMapperBudget($r->status) . '</td>';
-                            echo '<td>' . $r->descricaoProduto . '</td>';
-                            echo '<td style="display: flex; gap: 8px;">';
-                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-                                echo '<a href="' . base_url() . 'os/visualizar/' . $r->idOs . '" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes"><i class="fas fa-eye"></i></a>';
-                            }
-                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
-                                echo '<a href="' . base_url() . 'os/editar/' . $r->idOs . '" class="btn btn-info tip-top" title="Editar OS"><i class="icon-pencil icon-white"></i></a>';
-                            }
-
-                            echo '</td>';
-                            echo '</tr>';
-                        } ?>
-                    </tbody>
-                </table>
-            <?php } ?>
+                    <?php } else { ?>
+                        <?php foreach ($results as $r) {
+                            $dataInicial = formatDate($r->dataInicial);
+                            $dataFinal = formatDate($r->dataFinal);
+                            ?>
+                            <tr>
+                                <td>
+                                    <?= formatDate($r->dataInicial); ?>
+                                </td>
+                                <td>
+                                    <?= formatDate($r->dataFinal); ?>
+                                </td>
+                                <td>
+                                    <?= statusMapperBudget($r->status); ?>
+                                </td>
+                                <td>
+                                    <?= $r->descricaoProduto; ?>
+                                </td>
+                                <td style="display: flex; gap: 8px;">
+                                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
+                                        <a href="<?= base_url() ?>os/visualizar/<?= $r->idOs ?>" style="margin-right: 1%"
+                                            class="btn tip-top" title="Ver mais detalhes"><i class="fas fa-eye"></i></a>
+                                    <?php } ?>
+                                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
+                                        <a href="<?= base_url() ?>os/editar/<?= $r->idOs ?>" class="btn btn-info tip-top"
+                                            title="Editar OS"><i class="icon-pencil icon-white"></i></a>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    <?php } ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<script>
-    $("a").click(function () {
-        $("div").removeClass('in');
-    });
-</script>

@@ -235,7 +235,7 @@ class Clientes extends CI_Controller
         if ($id == null) {
 
             $this->session->set_flashdata('error', 'Erro ao tentar excluir cliente.');
-            redirect(base_url() . 'clientes/gerenciar/');
+            redirect(base_url() . 'clientes/');
         }
 
         //$id = 2;
@@ -283,6 +283,6 @@ class Clientes extends CI_Controller
         $this->clientes_model->delete('clientes', 'idClientes', $id);
 
         $this->session->set_flashdata('success', 'Cliente excluido com sucesso!');
-        redirect(base_url() . 'clientes/gerenciar/');
+        redirect(base_url() . 'clientes/');
     }
 }

@@ -16,14 +16,14 @@
             echo '<div class="alert alert-danger">' . $custom_error . '</div>';
         } ?>
         <div class="col-md-12">
-            <form action="<?php echo current_url(); ?>" id="formCliente" class="" method="post">
+            <form action="<?= current_url(); ?>" id="formCliente" class="" method="post">
 
                 <div class="form-group col-md-6">
-                    <?php echo form_hidden('idClientes', $result->idClientes) ?>
+                    <?= form_hidden('idClientes', $result->idClientes) ?>
                     <label for="nomeCliente" class="control-label">Nome<span class="required">*</span></label>
                     <div class="controls">
                         <input id="nomeCliente" class="form-control" type="text" name="nomeCliente"
-                            value="<?php echo $result->nomeCliente; ?>" />
+                            value="<?= $result->nomeCliente; ?>" />
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@
                     <label for="documento" class="control-label">CPF/CNPJ<span class="required">*</span></label>
                     <div class="controls">
                         <input id="documento" class="form-control" type="text" name="documento"
-                            value="<?php echo $result->documento; ?>" />
+                            value="<?= $result->documento; ?>" />
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
                     <label for="telefone" class="control-label">Telefone<span class="required">*</span></label>
                     <div class="controls">
                         <input id="telefone" class="form-control" type="text" name="telefone"
-                            value="<?php echo $result->telefoneCliente; ?>" />
+                            value="<?= $result->telefoneCliente; ?>" />
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
                     <label for="celular" class="control-label">Celular</label>
                     <div class="controls">
                         <input id="celular" class="form-control" type="text" name="celular"
-                            value="<?php echo $result->celular; ?>" />
+                            value="<?= $result->celular; ?>" />
                     </div>
                 </div>
 
@@ -55,15 +55,14 @@
                     <label for="email" class="control-label">Email<span class="required">*</span></label>
                     <div class="controls">
                         <input id="email" class="form-control" type="text" name="email"
-                            value="<?php echo $result->emailCliente; ?>" />
+                            value="<?= $result->emailCliente; ?>" />
                     </div>
                 </div>
 
                 <div class="form-group col-md-3">
                     <label for="rua" class="control-label">Rua<span class="required">*</span></label>
                     <div class="controls">
-                        <input id="rua" class="form-control" type="text" name="rua"
-                            value="<?php echo $result->rua; ?>" />
+                        <input id="rua" class="form-control" type="text" name="rua" value="<?= $result->rua; ?>" />
                     </div>
                 </div>
 
@@ -71,7 +70,7 @@
                     <label for="numero" class="control-label">Número<span class="required">*</span></label>
                     <div class="controls">
                         <input id="numero" class="form-control" type="text" name="numero"
-                            value="<?php echo $result->numero; ?>" />
+                            value="<?= $result->numero; ?>" />
                     </div>
                 </div>
 
@@ -79,7 +78,7 @@
                     <label for="bairro" class="control-label">Bairro<span class="required">*</span></label>
                     <div class="controls">
                         <input id="bairro" class="form-control" type="text" name="bairro"
-                            value="<?php echo $result->bairro; ?>" />
+                            value="<?= $result->bairro; ?>" />
                     </div>
                 </div>
 
@@ -87,7 +86,7 @@
                     <label for="cidade" class="control-label">Cidade<span class="required">*</span></label>
                     <div class="controls">
                         <input id="cidade" class="form-control" type="text" name="cidade"
-                            value="<?php echo $result->cidade; ?>" />
+                            value="<?= $result->cidade; ?>" />
                     </div>
                 </div>
 
@@ -95,31 +94,25 @@
                     <label for="estado" class="control-label">Estado<span class="required">*</span></label>
                     <div class="controls">
                         <input id="estado" class="form-control" type="text" name="estado"
-                            value="<?php echo $result->estado; ?>" />
+                            value="<?= $result->estado; ?>" />
                     </div>
                 </div>
 
                 <div class="form-group col-md-2">
                     <label for="cep" class="control-label">CEP<span class="required">*</span></label>
                     <div class="controls">
-                        <input id="cep" class="form-control" type="text" name="cep"
-                            value="<?php echo $result->cep; ?>" />
+                        <input id="cep" class="form-control" type="text" name="cep" value="<?= $result->cep; ?>" />
                     </div>
                 </div>
-
-
 
                 <div class="form-group">
                     <div class="col-md-12"
                         style="margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-                        <button type="submit" class="btn btn-success"><i class="icon-ok icon-white"></i>
-                            Salvar</button>
-
-
-
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i>
+                            Salvar
+                        </button>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
@@ -127,9 +120,15 @@
 
 
 
-<script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
+<script src="<?= base_url() ?>assets/js/jquery.validate.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $('#documento').inputmask(['999.999.999-99', '99.999.999/9999-99']);
+        $('#telefone').inputmask(['(99) 9999-9999', '(99) 9 9999-9999']);
+        $('#celular').inputmask(['(99) 9999-9999', '(99) 9 9999-9999']);
+        $('#cep').inputmask(['99999-999']);
+
         $('#formCliente').validate({
             rules: {
                 nomeCliente: {
@@ -213,7 +212,7 @@
 <!-- Modal -->
 <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
-    <form action="<?php echo base_url() ?>clientes/excluir" method="post">
+    <form action="<?= base_url() ?>clientes/excluir" method="post">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h5 id="myModalLabel">Excluir Cliente</h5>
