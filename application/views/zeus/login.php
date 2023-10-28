@@ -6,9 +6,12 @@
   <title>Zeus - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/login.css">
+  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-style.css">
+  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap3.css">
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/animate.css">
   <link href="<?php echo base_url(); ?>assets/img/favicon.ico" rel="icon" type="image/x-icon" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/alert.js"></script>
 
 
 
@@ -16,61 +19,44 @@
 
 <body>
 
-  <div class="wrapper">
-    <div class="container">
-      <div class="control-group normal_text">
-        <h1>
-          <div>
-
-
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-              id="Camada_1" x="0px" y="0px" viewBox="0 0 183.5 148"
-              style="enable-background:new 0 0 183.5 148;width: 100px;position: relative;left: 20px;"
-              xml:space="preserve">
-              <style type="text/css">
-                .st0 {
-                  fill: #fff;
-                }
-              </style>
-              <g>
-                <path class="st0"
-                  d="M93.7,83.6l89.8-42.1L82.5,79L52.8,22L0,127L93.7,83.6L93.7,83.6z M36,93.5l16-38.4L66.3,82L36,93.5z">
-                </path>
-                <polygon class="st0" points="79.1,115.4 101,115.2 101,115.2 94.8,103.7 78.8,111.8  "></polygon>
-              </g>
-            </svg>
-          </div>
-        </h1>
-
-
-      </div>
-      <form class="form" id="formLogin" method="post" action="<?php echo base_url() ?>zeus/verificarLogin">
-        <div class="control-group">
-
-          <div id="alerta" class="alert animated rubberBand alert-danger" style="display:none ;opacity: 1;">
-            Email ou Senha invalidos! </div>
-
-
-          <input type="text" id="email" name="email" placeholder="Usuário">
-          <input type="password" name="senha" placeholder="Senha">
-          <button type="submit" id="login-button">Login</button><br><br>
-          <a style="color: #fff;" href="/home">Voltar ao Site</a>
+  <div>
+    <div style="margin-left: 48px; padding-top: 48px;">
+      <img src="<?php echo base_url(); ?>assets/img/logo.svg" alt="">
+    </div>
+    <div class="center-flex">
+      <div class="panel-body" style="padding: 16px; width: 390px">
+        <div class="text-center" style="margin-bottom: 48px;">
+          <h4>Faça seu login</h4>
         </div>
-      </form>
+        <form class="form" id="formLogin" method="post" action="<?php echo base_url() ?>zeus/verificarLogin">
+          <div class="control-group">
+            <div class="form-group">
+              <input class="form-control" type="text" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="form-group">
+              <div class="button-right-input">
+                <input class="form-control" id="password" type="password" name="senha" placeholder="Senha">
+                <div id="handle-password-view" class="input-btn" onclick="handleView(event)">
+                  <i class="ri-eye-line"></i>
+                </div>
+              </div>
+              <div style="margin-top: 12px;">
+                <a href="#" style="color:#7012c5;font-size: 0.8rem;margin-top: 12px;">Esqueci minha senha</a>
+              </div>
+            </div>
+            <button class="btn-primary-outline btn btn-block" style="padding: 12px; margin-top: 48px" type="submit"
+              id="login-button">Continuar</button><br>
+            <a style="color: #fff;" href="/home">Voltar ao Site</a>
+          </div>
+        </form>
+        <div class="text-center">
+          <a href="#" style="color:#7012c5; font-size: 0.8rem;">Ainda não sou cliente</a>
+        </div>
+      </div>
+
     </div>
 
-    <ul class="bg-bubbles">
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-    </ul>
+
   </div>
 
 
@@ -82,8 +68,22 @@
 
 
   <script type="text/javascript">
-    $(document).ready(function () {
 
+    function handleView(event) {
+      let input = $('#password')
+
+      if (event.target.className === "ri-eye-line") {
+        event.target.className = "ri-eye-off-line"
+        input[0].type = 'text'
+      } else {
+        event.target.className = "ri-eye-line"
+        input[0].type = 'password'
+      }
+
+
+    }
+
+    $(document).ready(function () {
       $('#email').focus();
       $("#formLogin").validate({
         rules: {
@@ -96,57 +96,38 @@
         },
         submitHandler: function (form) {
           var dados = $(form).serialize();
-          $('#btn-acessar').addClass('disabled');
-          $('#progress-acessar').removeClass('hide');
-          console.log(dados)
+
+          const buttons = form.querySelectorAll('button');
+          buttons.forEach((button) => {
+            button.disabled = true;
+            button.textContent = 'Aguarde...';
+          });
+
           $.ajax({
             type: "POST",
             url: "<?php echo base_url(); ?>zeus/verificarLogin?ajax=true",
             data: dados,
             dataType: 'json',
             success: function (data) {
-              console.log(data)
               if (data.result == true) {
-                $('form').fadeOut(200);
-                $('.wrapper').addClass('form-success');
                 window.location.href = "<?php echo base_url(); ?>zeus";
               }
+
               else {
-
-
-                $('#btn-acessar').removeClass('disabled');
-                $('#progress-acessar').addClass('hide');
-
-                $('#alerta').addClass('mostra');
-
-                $(".alert").delay(4000).fadeOut(200, function () {
-                  $(this).removeClass('mostra');
+                buttons.forEach((button) => {
+                  button.disabled = false;
+                  button.textContent = 'Salvar';
                 });
+                showAlert('Opps :( Algo nao se saiu bem', 'Email e/ou senha inválidos')
               }
-
-
             }
           });
-
           return true;
         },
-
-        errorClass: "help-inline",
-        errorElement: "span",
-        highlight: function (element, errorClass, validClass) {
-          $(element).parents('.control-group').addClass('error');
-        },
-        unhighlight: function (element, errorClass, validClass) {
-          $(element).parents('.control-group').removeClass('error');
-          $(element).parents('.control-group').addClass('success');
-        }
       });
-
     });
 
   </script>
-
-
 </body>
 
 </html>
