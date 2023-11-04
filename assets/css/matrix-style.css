@@ -1957,9 +1957,6 @@ form {
     display: none;
   }
 }
-. > tbody > tr:nth-of-type(odd) {
-  background: #999;
-}
 
 @media only screen and (max-width: 780px) {
   #sidebar {
@@ -2390,4 +2387,45 @@ input[type="color"]:focus,
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+}
+
+.input-otp {
+  display: flex;
+  gap: 12px;
+}
+.input-otp input {
+  border: 1px solid #d9d9d9;
+  text-align: center;
+  border-radius: 12px;
+  height: 50px;
+  font-size: 1.5rem;
+}
+
+#timer {
+  text-align: center;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+#resendOtp {
+  text-align: center;
+}
+
+#resendOtp a {
+  color: #9333ea;
+}
+
+.otp-error input {
+  border: 1px solid red;
+}
+
+#error-message {
+  display: none;
+  text-align: center;
+  margin-top: 12px;
+  color: red;
+}
+
+.otp-error #error-message {
+  display: block;
 }

@@ -14,7 +14,7 @@ class Zeus extends CI_Controller
     public function index()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->data['billedProducts'] = $this->ZeusModel->getBilledProducts();
@@ -64,7 +64,8 @@ class Zeus extends CI_Controller
 
         if (getMobileRequest()) {
             array_shift($this->data['dashItems']);
-        };
+        }
+        ;
 
         $this->load->view('tema/topo', $this->data);
     }
@@ -80,7 +81,7 @@ class Zeus extends CI_Controller
     public function minhaConta()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->data['usuario'] = $this->ZeusModel->getById($this->session->userdata('id'));
@@ -91,7 +92,7 @@ class Zeus extends CI_Controller
     public function changePassword()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->load->library('encryption');
@@ -112,7 +113,7 @@ class Zeus extends CI_Controller
     public function pesquisar()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $termo = $this->input->get('termo');
@@ -126,79 +127,18 @@ class Zeus extends CI_Controller
         $this->load->view('tema/topo', $this->data);
     }
 
-    public function login()
-    {
 
-        $this->load->view('zeus/login');
-    }
     public function sair()
     {
         $this->session->sess_destroy();
-        redirect('zeus/login');
+        redirect('auth/login');
     }
-
-    public function verificarLogin()
-    {
-
-        header('Access-Control-Allow-Origin: ' . base_url());
-        header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-        header('Access-Control-Max-Age: 1000');
-        header('Access-Control-Allow-Headers: Content-Type');
-
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required|trim');
-        $this->form_validation->set_rules('senha', 'Senha', 'required|trim');
-        if ($this->form_validation->run() == false) {
-            $json = array('result' => false, 'message' => validation_errors());
-            echo json_encode($json);
-        } else {
-            $email = $this->input->post('email');
-            $password = $this->input->post('senha');
-            $this->load->model('ZeusModel');
-            $user = $this->ZeusModel->check_credentials($email);
-            $company = $this->ZeusModel->getEmitente();
-
-            if ($user) {
-
-                $this->load->library('encryption');
-                $this->encryption->initialize(array('driver' => 'mcrypt'));
-                $password_stored = $this->encryption->decrypt($user->senha);
-
-                if ($password == $password_stored) {
-
-                    $session_data = array(
-                        'nome' => $user->nome,
-                        'email' => $user->email,
-                        'telefone' => $user->telefone,
-                        'id' => $user->idUsuarios,
-                        'permissao' => $user->permissoes_id,
-                        'permission_label' => $user->permissao,
-                        'logado' => TRUE,
-                        'perfil' => $user->perfil,
-                        'company' => $company,
-                    );
-
-                    $this->session->set_userdata($session_data);
-                    $json = array('result' => true);
-                    echo json_encode($json);
-                } else {
-                    $json = array('result' => false, 'message' => 'Os dados de acesso estão incorretos.');
-                    echo json_encode($json);
-                }
-            } else {
-                $json = array('result' => false, 'message' => 'Usuário não encontrado, verifique se suas credenciais estão corretass.');
-                echo json_encode($json);
-            }
-        }
-        die();
-    }
-
 
     public function backup()
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cBackup')) {
@@ -224,12 +164,11 @@ class Zeus extends CI_Controller
         force_download('backup' . date('d-m-Y H:m:s') . '.zip', $backup);
     }
 
-
     public function emitente()
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
@@ -248,7 +187,7 @@ class Zeus extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
@@ -289,7 +228,7 @@ class Zeus extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
@@ -349,7 +288,7 @@ class Zeus extends CI_Controller
     {
         try {
             if ((!session_id()) || (!$this->session->userdata('logado'))) {
-                redirect('zeus/login');
+                redirect('auth/login');
             }
 
             if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
@@ -435,7 +374,7 @@ class Zeus extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmitente')) {
@@ -469,7 +408,7 @@ class Zeus extends CI_Controller
     public function configuration()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         if (getMobileRequest()) {

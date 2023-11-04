@@ -11,7 +11,7 @@ class Usuarios extends CI_Controller
 
         parent::__construct();
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para configurar os usuários.');
@@ -70,7 +70,7 @@ class Usuarios extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->load->library('upload');
@@ -82,11 +82,11 @@ class Usuarios extends CI_Controller
         }
 
         $this->upload_config = array(
-            'upload_path'   => $image_upload_folder,
+            'upload_path' => $image_upload_folder,
             'allowed_types' => 'png|jpg|jpeg|bmp',
-            'max_size'      => 2048,
-            'remove_space'  => TRUE,
-            'encrypt_name'  => TRUE,
+            'max_size' => 2048,
+            'remove_space' => TRUE,
+            'encrypt_name' => TRUE,
         );
 
         $this->upload->initialize($this->upload_config);
@@ -131,7 +131,7 @@ class Usuarios extends CI_Controller
                 'situacao' => set_value('situacao'),
                 'permissoes_id' => $this->input->post('permissoes_id'),
                 'dataCadastro' => date('Y-m-d'),
-                'perfil' =>  $logo
+                'perfil' => $logo
 
             );
 
@@ -244,7 +244,7 @@ class Usuarios extends CI_Controller
     public function excluir()
     {
 
-        $ID =  $this->uri->segment(3);
+        $ID = $this->uri->segment(3);
         $this->usuarios_model->delete('usuarios', 'idUsuarios', $ID);
         redirect(base_url() . 'usuarios/gerenciar/');
     }

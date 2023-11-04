@@ -18,7 +18,7 @@ class Minhaconta extends CI_Controller
     public function index()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->data['usuario'] = $this->minhaconta_model->getById($this->session->userdata('id'));
@@ -31,7 +31,7 @@ class Minhaconta extends CI_Controller
     public function changePassword()
     {
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->load->library('encryption');
@@ -54,7 +54,7 @@ class Minhaconta extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->load->library('form_validation');
@@ -96,7 +96,7 @@ class Minhaconta extends CI_Controller
     {
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
 
@@ -134,7 +134,7 @@ class Minhaconta extends CI_Controller
     {
         try {
             if ((!session_id()) || (!$this->session->userdata('logado'))) {
-                redirect('zeus/login');
+                redirect('auth/login');
             }
 
             $id = $this->input->post('id');

@@ -1,37 +1,41 @@
 <?php
 
-class Permissoes extends CI_Controller {
-    
+class Permissoes extends CI_Controller
+{
 
 
-    
-  function __construct() {
-      parent::__construct();
-      if( (!session_id()) || (!$this->session->userdata('logado'))){
-        redirect('zeus/login');
-      }
 
-      if(!$this->permission->checkPermission($this->session->userdata('permissao'),'cPermissao')){
-        $this->session->set_flashdata('error','Você não tem permissão para configurar as permissões no sistema.');
-        redirect(base_url());
-      }
 
-      $this->load->helper(array('form', 'codegen_helper'));
-      $this->load->model('permissoes_model', '', TRUE);
-      $this->data['menuConfiguracoes'] = 'Permissões';
-  }
-	
-	function index(){
-		$this->gerenciar();
-    
-	}
+    function __construct()
+    {
+        parent::__construct();
+        if ((!session_id()) || (!$this->session->userdata('logado'))) {
+            redirect('auth/login');
+        }
 
-	function gerenciar(){
-        
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para configurar as permissões no sistema.');
+            redirect(base_url());
+        }
+
+        $this->load->helper(array('form', 'codegen_helper'));
+        $this->load->model('permissoes_model', '', TRUE);
+        $this->data['menuConfiguracoes'] = 'Permissões';
+    }
+
+    function index()
+    {
+        $this->gerenciar();
+
+    }
+
+    function gerenciar()
+    {
+
         $this->load->library('pagination');
-        
-        
-        $config['base_url'] = base_url().'permissoes/gerenciar/';
+
+
+        $config['base_url'] = base_url() . 'permissoes/gerenciar/';
         $config['total_rows'] = $this->permissoes_model->count('permissoes');
         $config['per_page'] = 10;
         $config['next_link'] = 'Próxima';
@@ -53,18 +57,19 @@ class Permissoes extends CI_Controller {
         $config['last_tag_open'] = '<li>';
         $config['last_tag_close'] = '</li>';
 
-        $this->pagination->initialize($config); 	
+        $this->pagination->initialize($config);
 
-		  $this->data['results'] = $this->permissoes_model->get('permissoes','idPermissao,nome,data,situacao','',$config['per_page'],$this->uri->segment(3));
-       
-	    $this->data['view'] = 'permissoes/permissoes';
-       	$this->load->view('tema/topo',$this->data);
+        $this->data['results'] = $this->permissoes_model->get('permissoes', 'idPermissao,nome,data,situacao', '', $config['per_page'], $this->uri->segment(3));
 
-       
-		
+        $this->data['view'] = 'permissoes/permissoes';
+        $this->load->view('tema/topo', $this->data);
+
+
+
     }
-	
-    function adicionar() {
+
+    function adicionar()
+    {
 
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
@@ -73,59 +78,59 @@ class Permissoes extends CI_Controller {
         if ($this->form_validation->run() == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            
+
             $nomePermissao = $this->input->post('nome');
             $cadastro = date('Y-m-d');
             $situacao = 1;
 
             $permissoes = array(
 
-                  'aCliente' => $this->input->post('aCliente'),
-                  'eCliente' => $this->input->post('eCliente'),
-                  'dCliente' => $this->input->post('dCliente'),
-                  'vCliente' => $this->input->post('vCliente'),
+                'aCliente' => $this->input->post('aCliente'),
+                'eCliente' => $this->input->post('eCliente'),
+                'dCliente' => $this->input->post('dCliente'),
+                'vCliente' => $this->input->post('vCliente'),
 
-                  'aProduto' => $this->input->post('aProduto'),
-                  'eProduto' => $this->input->post('eProduto'),
-                  'dProduto' => $this->input->post('dProduto'),
-                  'vProduto' => $this->input->post('vProduto'),
+                'aProduto' => $this->input->post('aProduto'),
+                'eProduto' => $this->input->post('eProduto'),
+                'dProduto' => $this->input->post('dProduto'),
+                'vProduto' => $this->input->post('vProduto'),
 
-                  'aServico' => $this->input->post('aServico'),
-                  'eServico' => $this->input->post('eServico'),
-                  'dServico' => $this->input->post('dServico'),
-                  'vServico' => $this->input->post('vServico'),
+                'aServico' => $this->input->post('aServico'),
+                'eServico' => $this->input->post('eServico'),
+                'dServico' => $this->input->post('dServico'),
+                'vServico' => $this->input->post('vServico'),
 
-                  'aOs' => $this->input->post('aOs'),
-                  'eOs' => $this->input->post('eOs'),
-                  'dOs' => $this->input->post('dOs'),
-                  'vOs' => $this->input->post('vOs'),
+                'aOs' => $this->input->post('aOs'),
+                'eOs' => $this->input->post('eOs'),
+                'dOs' => $this->input->post('dOs'),
+                'vOs' => $this->input->post('vOs'),
 
-                  'aVenda' => $this->input->post('aVenda'),
-                  'eVenda' => $this->input->post('eVenda'),
-                  'dVenda' => $this->input->post('dVenda'),
-                  'vVenda' => $this->input->post('vVenda'),
+                'aVenda' => $this->input->post('aVenda'),
+                'eVenda' => $this->input->post('eVenda'),
+                'dVenda' => $this->input->post('dVenda'),
+                'vVenda' => $this->input->post('vVenda'),
 
-                  'aArquivo' => $this->input->post('aArquivo'),
-                  'eArquivo' => $this->input->post('eArquivo'),
-                  'dArquivo' => $this->input->post('dArquivo'),
-                  'vArquivo' => $this->input->post('vArquivo'),
+                'aArquivo' => $this->input->post('aArquivo'),
+                'eArquivo' => $this->input->post('eArquivo'),
+                'dArquivo' => $this->input->post('dArquivo'),
+                'vArquivo' => $this->input->post('vArquivo'),
 
-                  'aLancamento' => $this->input->post('aLancamento'),
-                  'eLancamento' => $this->input->post('eLancamento'),
-                  'dLancamento' => $this->input->post('dLancamento'),
-                  'vLancamento' => $this->input->post('vLancamento'),
+                'aLancamento' => $this->input->post('aLancamento'),
+                'eLancamento' => $this->input->post('eLancamento'),
+                'dLancamento' => $this->input->post('dLancamento'),
+                'vLancamento' => $this->input->post('vLancamento'),
 
-                  'cUsuario' => $this->input->post('cUsuario'),
-                  'cEmitente' => $this->input->post('cEmitente'),
-                  'cPermissao' => $this->input->post('cPermissao'),
-                  'cBackup' => $this->input->post('cBackup'),
+                'cUsuario' => $this->input->post('cUsuario'),
+                'cEmitente' => $this->input->post('cEmitente'),
+                'cPermissao' => $this->input->post('cPermissao'),
+                'cBackup' => $this->input->post('cBackup'),
 
-                  'rCliente' => $this->input->post('rCliente'),
-                  'rProduto' => $this->input->post('rProduto'),
-                  'rServico' => $this->input->post('rServico'),
-                  'rOs' => $this->input->post('rOs'),
-                  'rVenda' => $this->input->post('rVenda'),
-                  'rFinanceiro' => $this->input->post('rFinanceiro'),
+                'rCliente' => $this->input->post('rCliente'),
+                'rProduto' => $this->input->post('rProduto'),
+                'rServico' => $this->input->post('rServico'),
+                'rOs' => $this->input->post('rOs'),
+                'rVenda' => $this->input->post('rVenda'),
+                'rFinanceiro' => $this->input->post('rFinanceiro'),
 
             );
             $permissoes = serialize($permissoes);
@@ -151,9 +156,10 @@ class Permissoes extends CI_Controller {
 
     }
 
-    function editar() {
+    function editar()
+    {
 
-        
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -161,57 +167,57 @@ class Permissoes extends CI_Controller {
         if ($this->form_validation->run() == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            
+
             $nomePermissao = $this->input->post('nome');
             $situacao = $this->input->post('situacao');
             $permissoes = array(
 
-                  'aCliente' => $this->input->post('aCliente'),
-                  'eCliente' => $this->input->post('eCliente'),
-                  'dCliente' => $this->input->post('dCliente'),
-                  'vCliente' => $this->input->post('vCliente'),
+                'aCliente' => $this->input->post('aCliente'),
+                'eCliente' => $this->input->post('eCliente'),
+                'dCliente' => $this->input->post('dCliente'),
+                'vCliente' => $this->input->post('vCliente'),
 
-                  'aProduto' => $this->input->post('aProduto'),
-                  'eProduto' => $this->input->post('eProduto'),
-                  'dProduto' => $this->input->post('dProduto'),
-                  'vProduto' => $this->input->post('vProduto'),
+                'aProduto' => $this->input->post('aProduto'),
+                'eProduto' => $this->input->post('eProduto'),
+                'dProduto' => $this->input->post('dProduto'),
+                'vProduto' => $this->input->post('vProduto'),
 
-                  'aServico' => $this->input->post('aServico'),
-                  'eServico' => $this->input->post('eServico'),
-                  'dServico' => $this->input->post('dServico'),
-                  'vServico' => $this->input->post('vServico'),
+                'aServico' => $this->input->post('aServico'),
+                'eServico' => $this->input->post('eServico'),
+                'dServico' => $this->input->post('dServico'),
+                'vServico' => $this->input->post('vServico'),
 
-                  'aOs' => $this->input->post('aOs'),
-                  'eOs' => $this->input->post('eOs'),
-                  'dOs' => $this->input->post('dOs'),
-                  'vOs' => $this->input->post('vOs'),
+                'aOs' => $this->input->post('aOs'),
+                'eOs' => $this->input->post('eOs'),
+                'dOs' => $this->input->post('dOs'),
+                'vOs' => $this->input->post('vOs'),
 
-                  'aVenda' => $this->input->post('aVenda'),
-                  'eVenda' => $this->input->post('eVenda'),
-                  'dVenda' => $this->input->post('dVenda'),
-                  'vVenda' => $this->input->post('vVenda'),
+                'aVenda' => $this->input->post('aVenda'),
+                'eVenda' => $this->input->post('eVenda'),
+                'dVenda' => $this->input->post('dVenda'),
+                'vVenda' => $this->input->post('vVenda'),
 
-                  'aArquivo' => $this->input->post('aArquivo'),
-                  'eArquivo' => $this->input->post('eArquivo'),
-                  'dArquivo' => $this->input->post('dArquivo'),
-                  'vArquivo' => $this->input->post('vArquivo'),
+                'aArquivo' => $this->input->post('aArquivo'),
+                'eArquivo' => $this->input->post('eArquivo'),
+                'dArquivo' => $this->input->post('dArquivo'),
+                'vArquivo' => $this->input->post('vArquivo'),
 
-                  'aLancamento' => $this->input->post('aLancamento'),
-                  'eLancamento' => $this->input->post('eLancamento'),
-                  'dLancamento' => $this->input->post('dLancamento'),
-                  'vLancamento' => $this->input->post('vLancamento'),
+                'aLancamento' => $this->input->post('aLancamento'),
+                'eLancamento' => $this->input->post('eLancamento'),
+                'dLancamento' => $this->input->post('dLancamento'),
+                'vLancamento' => $this->input->post('vLancamento'),
 
-                  'cUsuario' => $this->input->post('cUsuario'),
-                  'cEmitente' => $this->input->post('cEmitente'),
-                  'cPermissao' => $this->input->post('cPermissao'),
-                  'cBackup' => $this->input->post('cBackup'),
+                'cUsuario' => $this->input->post('cUsuario'),
+                'cEmitente' => $this->input->post('cEmitente'),
+                'cPermissao' => $this->input->post('cPermissao'),
+                'cBackup' => $this->input->post('cBackup'),
 
-                  'rCliente' => $this->input->post('rCliente'),
-                  'rProduto' => $this->input->post('rProduto'),
-                  'rServico' => $this->input->post('rServico'),
-                  'rOs' => $this->input->post('rOs'),
-                  'rVenda' => $this->input->post('rVenda'),
-                  'rFinanceiro' => $this->input->post('rFinanceiro'),
+                'rCliente' => $this->input->post('rCliente'),
+                'rProduto' => $this->input->post('rProduto'),
+                'rServico' => $this->input->post('rServico'),
+                'rOs' => $this->input->post('rOs'),
+                'rVenda' => $this->input->post('rVenda'),
+                'rFinanceiro' => $this->input->post('rFinanceiro'),
 
             );
             $permissoes = serialize($permissoes);
@@ -224,7 +230,7 @@ class Permissoes extends CI_Controller {
 
             if ($this->permissoes_model->edit('permissoes', $data, 'idPermissao', $this->input->post('idPermissao')) == TRUE) {
                 $this->session->set_flashdata('success', 'Permissão editada com sucesso!');
-                redirect(base_url() . 'permissoes/editar/'.$this->input->post('idPermissao'));
+                redirect(base_url() . 'permissoes/editar/' . $this->input->post('idPermissao'));
             } else {
                 $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um errro.</p></div>';
             }
@@ -236,26 +242,26 @@ class Permissoes extends CI_Controller {
         $this->load->view('tema/topo', $this->data);
 
     }
-	
-    function desativar(){
-        
-        $id =  $this->input->post('id');
-        if ($id == null){
-            $this->session->set_flashdata('error','Erro ao tentar desativar permissão.');            
-            redirect(base_url().'permissoes/gerenciar/');
+
+    function desativar()
+    {
+
+        $id = $this->input->post('id');
+        if ($id == null) {
+            $this->session->set_flashdata('error', 'Erro ao tentar desativar permissão.');
+            redirect(base_url() . 'permissoes/gerenciar/');
         }
         $data = array(
-          'situacao' => false
+            'situacao' => false
         );
-        if($this->permissoes_model->edit('permissoes',$data,'idPermissao',$id)){
-          $this->session->set_flashdata('success','Permissão desativada com sucesso!');  
+        if ($this->permissoes_model->edit('permissoes', $data, 'idPermissao', $id)) {
+            $this->session->set_flashdata('success', 'Permissão desativada com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao desativar permissão!');
         }
-        else{
-          $this->session->set_flashdata('error','Erro ao desativar permissão!');  
-        }         
-        
-                  
-        redirect(base_url().'permissoes/gerenciar/');
+
+
+        redirect(base_url() . 'permissoes/gerenciar/');
     }
 }
 

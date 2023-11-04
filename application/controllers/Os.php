@@ -10,7 +10,7 @@ class Os extends CI_Controller
         parent::__construct();
 
         if ((!session_id()) || (!$this->session->userdata('logado'))) {
-            redirect('zeus/login');
+            redirect('auth/login');
         }
 
         $this->load->helper(array('form', 'codegen_helper'));
@@ -124,8 +124,10 @@ class Os extends CI_Controller
 
             $data = array(
                 'dataInicial' => $dataInicial,
-                'clientes_id' => $this->input->post('clientes_id'), //set_value('idCliente'),
-                'usuarios_id' => $this->input->post('usuarios_id'), //set_value('idUsuario'),
+                'clientes_id' => $this->input->post('clientes_id'),
+                //set_value('idCliente'),
+                'usuarios_id' => $this->input->post('usuarios_id'),
+                //set_value('idUsuario'),
                 'dataFinal' => $dataFinal,
                 'garantia' => set_value('garantia'),
                 'descricaoProduto' => set_value('descricaoProduto'),
@@ -242,8 +244,10 @@ class Os extends CI_Controller
         } else {
             $data = array(
                 'dataInicial' => set_value('dataInicial'),
-                'clientes_id' => $this->input->post('clientes_id'), //set_value('idCliente'),
-                'usuarios_id' => $this->input->post('usuarios_id'), //set_value('idUsuario'),
+                'clientes_id' => $this->input->post('clientes_id'),
+                //set_value('idCliente'),
+                'usuarios_id' => $this->input->post('usuarios_id'),
+                //set_value('idUsuario'),
                 'dataFinal' => set_value('dataFinal'),
                 'garantia' => set_value('garantia'),
                 'descricaoProduto' => set_value('descricaoProduto'),
@@ -382,7 +386,7 @@ class Os extends CI_Controller
             redirect(base_url());
         }
 
-        $id =  $this->input->post('id');
+        $id = $this->input->post('id');
         if ($id == null) {
 
             $this->session->set_flashdata('error', 'Erro ao tentar excluir OS.');
@@ -535,9 +539,10 @@ class Os extends CI_Controller
         $this->load->library('image_lib');
 
         $upload_conf = array(
-            'upload_path'   => realpath('./assets/anexos'),
-            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt', // formatos permitidos para anexos de os
-            'max_size'      => 0,
+            'upload_path' => realpath('./assets/anexos'),
+            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt',
+            // formatos permitidos para anexos de os
+            'max_size' => 0,
         );
 
         $this->upload->initialize($upload_conf);
@@ -569,10 +574,10 @@ class Os extends CI_Controller
                     // set the resize config
                     $resize_conf = array(
 
-                        'source_image'  => $upload_data['full_path'],
-                        'new_image'     => $upload_data['file_path'] . 'thumbs/thumb_' . $upload_data['file_name'],
-                        'width'         => 200,
-                        'height'        => 125
+                        'source_image' => $upload_data['full_path'],
+                        'new_image' => $upload_data['file_path'] . 'thumbs/thumb_' . $upload_data['file_name'],
+                        'width' => 200,
+                        'height' => 125
                     );
 
                     $this->image_lib->initialize($resize_conf);
@@ -698,19 +703,19 @@ class Os extends CI_Controller
                 $this->db->update('os');
 
                 $this->session->set_flashdata('success', 'OS faturada com sucesso!');
-                $json = array('result' =>  true);
+                $json = array('result' => true);
                 echo json_encode($json);
                 die();
             } else {
                 $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
-                $json = array('result' =>  false);
+                $json = array('result' => false);
                 echo json_encode($json);
                 die();
             }
         }
 
         $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
-        $json = array('result' =>  false);
+        $json = array('result' => false);
         echo json_encode($json);
     }
 }
