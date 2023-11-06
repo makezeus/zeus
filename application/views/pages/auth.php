@@ -1,6 +1,8 @@
 <div>
   <div style="position: fixed; top: 45px; left:45px">
-    <img src="<?php echo base_url(); ?>assets/img/logo.svg" alt="">
+    <a href="/zeus">
+      <img src="<?php echo base_url(); ?>assets/img/logo.svg" alt="">
+    </a>
   </div>
   <div class="center-flex">
     <div class="panel-body" style="padding: 16px; width: 390px">

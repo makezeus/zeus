@@ -69,7 +69,7 @@ class Produtos extends CI_Controller
         } else {
             $customFields[] = [
                 "field" => "actions",
-                "value" => '<a href="' . base_url() . 'produtos/visualizar/$$idProdutos$$" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes">Visualizar</a>',
+                "value" => '<a href="' . base_url() . 'produtos/editar/$$idProdutos$$" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes">Editar</a>',
             ];
             $columns = [
                 'Produto' => 'porductsInformation',
